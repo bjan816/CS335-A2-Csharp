@@ -1,4 +1,5 @@
 using A2.Data;
+using A2.Handler;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,10 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddAuthentication("BasicAuthentication")
+            .AddScheme<AuthenticationSchemeOptions, A2AuthHandler>("BasicAuthentication", null);
+
+        builder.Services.AddAuthorization(options => { options.AddPolicy("IsRegisteredUser", policy => policy.RequireClaim("RegisteredUser")); });
 
         builder.Services.AddDbContext<A2DbContext>(options => options.UseSqlite(builder.Configuration["WebAPIConnection"]));
 
@@ -30,6 +35,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
 
