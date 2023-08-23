@@ -4,7 +4,7 @@ namespace A2.Data
 {
     public interface IA2Repo
     {
-        Task<bool> UserExists(string userName);
+        Task<bool> IsUserNameRegistered(string userName);
         Task<User?> FindUser(string userName);
         Task RegisterUser(User user);
 

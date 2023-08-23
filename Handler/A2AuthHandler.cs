@@ -67,7 +67,7 @@ namespace A2.Handler
 
         private async Task<bool> IsValidUser(string userName, string password)
         {
-            if (!await _repository.UserExists(userName))
+            if (!await _repository.IsUserNameRegistered(userName))
             {
                 return false;
             }

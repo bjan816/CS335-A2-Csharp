@@ -21,7 +21,7 @@ namespace A2.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            if (await _repository.UserExists(user.UserName))
+            if (await _repository.IsUserNameRegistered(user.UserName))
             {
                 return Ok($"UserName {user.UserName} is not available.");
             }

@@ -12,7 +12,7 @@ namespace A2.Data
             _dbContext = dbContext;
         }
 
-        public async Task<bool> UserExists(string userName)
+        public async Task<bool> IsUserNameRegistered(string userName)
         {
             return await _dbContext.Users.AnyAsync(u => u.UserName == userName);
         }
