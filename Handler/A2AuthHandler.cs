@@ -48,7 +48,7 @@ namespace A2.Handler
                 return AuthenticateResult.Fail("Invalid Authorization Header");
             }
 
-            if (!await IsValidUser(userName, password))
+            if (!await _repository.IsUserRegistered(userName, password))
             {
                 return AuthenticateResult.Fail("Invalid Username or Password");
             }
@@ -63,18 +63,6 @@ namespace A2.Handler
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
             return AuthenticateResult.Success(ticket);
-        }
-
-        private async Task<bool> IsValidUser(string userName, string password)
-        {
-            if (!await _repository.IsUserNameRegistered(userName))
-            {
-                return false;
-            }
-
-            var user = await _repository.FindUser(userName);
-
-            return user?.Password == password;
         }
     }
 }

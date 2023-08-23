@@ -17,9 +17,21 @@ namespace A2.Data
             return await _dbContext.Users.AnyAsync(u => u.UserName == userName);
         }
 
+        public async Task<bool> IsUserRegistered(string userName, string password)
+        {
+            if (!await IsUserNameRegistered(userName))
+            {
+                return false;
+            }
+
+            var user = await FindUser(userName);
+
+            return user?.Password == password;
+        }
+
         public async Task<User?> FindUser(string userName)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName); 
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);
         }
 
         public async Task RegisterUser(User user)
