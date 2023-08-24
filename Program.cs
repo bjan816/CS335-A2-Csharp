@@ -19,7 +19,15 @@ public class Program
             .AddScheme<AuthenticationSchemeOptions, A2AuthHandler>("BasicAuthentication", null);
 
         builder.Services.AddAuthorization(options => { options.AddPolicy("IsRegisteredUser", policy => policy.RequireClaim("RegisteredUser")); });
-        builder.Services.AddAuthorization(options => { options.AddPolicy("IsOrganizer", policy => policy.RequireClaim("IsOrganizer")); }); 
+        builder.Services.AddAuthorization(options => { options.AddPolicy("IsOrganizer", policy => policy.RequireClaim("IsOrganizer")); });
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("HasAuthority", policy =>
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim(claim => claim.Type == ClaimTypes.RegisteredUser || claim.Type == ClaimTypes.IsOrganizer)
+                )
+            );
+        });
 
         builder.Services.AddDbContext<A2DbContext>(options => options.UseSqlite(builder.Configuration["WebAPIConnection"]));
 

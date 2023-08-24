@@ -75,6 +75,32 @@ namespace A2.Handler
                             return AuthenticateResult.Success(ticket);
                         }
                     }
+                    else if (Request.Path.Value.Contains("EventCount"))
+                    {
+                        List<Claim> claims = new List<Claim>();
+                        
+                        var user = await _repository.IsUserRegistered(username, password);
+                        var organizer = await _repository.IsUserOrganizer(username, password);
+
+                        if (user)
+                        {
+                            claims.Add(new Claim(ClaimTypes.RegisteredUser, username));
+                        }
+
+                        if (organizer)
+                        {
+                            claims.Add(new Claim(ClaimTypes.IsOrganizer, username));
+                        }
+
+                        if (claims.Count > 0)
+                        {
+                            var identity = new ClaimsIdentity(claims, Scheme.Name);
+                            var principal = new ClaimsPrincipal(identity);
+                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                            return AuthenticateResult.Success(ticket);
+                        }
+                    } 
                 }
 
                 return AuthenticateResult.Fail("Invalid username or password.");

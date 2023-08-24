@@ -87,5 +87,13 @@ namespace A2.Controllers
 
             return Ok("Success.");
         }
+
+        [HttpGet("EventCount")]
+        [Authorize(Policy = "HasAuthority")]
+        public async Task<IActionResult> GetEventCount()
+        {
+            int count = await _repository.GetEventCount();
+            return Ok(count);
+        }
     }
 }
