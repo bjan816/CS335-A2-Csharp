@@ -10,6 +10,7 @@ namespace A2.Data
         Task<bool> IsUserOrganizer(string userName, string password);
 
         Task<int> GetEventCount();
+        Task<Event?> GetEvent(int id);
 
         Task<User?> FindUser(string userName);
         Task RegisterUser(User user);

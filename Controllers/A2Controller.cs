@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using A2.Data;
 using A2.Dtos;
 using A2.Models;
@@ -94,6 +95,47 @@ namespace A2.Controllers
         {
             int count = await _repository.GetEventCount();
             return Ok(count);
+        }
+
+        public static string ConvertEventToICalendar(Event e)
+        {
+            var dtStamp = DateTime.UtcNow;
+
+            var builder = new StringBuilder();
+
+            const string uid = "bjan816";
+
+            builder.AppendLine("BEGIN:VCALENDAR");
+            builder.AppendLine($"PRODID:-//{uid}");
+            builder.AppendLine("VERSION:2.0");
+            builder.AppendLine("BEGIN:VEVENT");
+
+            builder.AppendLine($"UID:{e.Id}");
+            builder.AppendLine($"DTSTAMP:{dtStamp:yyyyMMddTHHmmssZ}");
+            builder.AppendLine($"DTSTART:{e.Start:yyyyMMddTHHmmssZ}");
+            builder.AppendLine($"DTEND:{e.End:yyyyMMddTHHmmssZ}");
+            builder.AppendLine($"SUMMARY:{e.Summary}");
+            builder.AppendLine($"DESCRIPTION:{e.Description}");
+            builder.AppendLine($"LOCATION:{e.Location}");
+
+            builder.AppendLine("END:VEVENT");
+            builder.AppendLine("END:VCALENDAR");
+
+            return builder.ToString();
+        }
+
+        [Authorize(Policy = "HasAuthority")]
+        [HttpGet("Event/{id}")]
+        public async Task<IActionResult> Event(int id)
+        {
+            var e = await _repository.GetEvent(id);
+            if (e == null)
+            {
+                return BadRequest($"Event {id} does not exist.");
+            }
+
+            var iCalendarContent = ConvertEventToICalendar(e);
+            return Ok(iCalendarContent);
         }
     }
 }

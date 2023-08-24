@@ -39,6 +39,11 @@ namespace A2.Data
             return await _dbContext.Events.CountAsync();
         }
 
+        public async Task<Event?> GetEvent(int id)
+        {
+            return await _dbContext.Events.FindAsync(id);
+        }
+
         public async Task<User?> FindUser(string userName)
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == userName);

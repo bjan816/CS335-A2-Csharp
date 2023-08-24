@@ -75,7 +75,7 @@ namespace A2.Handler
                             return AuthenticateResult.Success(ticket);
                         }
                     }
-                    else if (Request.Path.Value.Contains("EventCount"))
+                    else if (Request.Path.Value.Contains("EventCount") || Request.Path.Value.Contains("Event/"))
                     {
                         List<Claim> claims = new List<Claim>();
                         
