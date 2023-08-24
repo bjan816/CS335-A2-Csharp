@@ -8,6 +8,12 @@ using Microsoft.Extensions.Options;
 
 namespace A2.Handler
 {
+    public static class ClaimTypes
+    {
+        public const string RegisteredUser = "RegisteredUser";
+        public const string IsOrganizer = "IsOrganizer";
+    }
+
     public class A2AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IA2Repo _repository;
@@ -31,38 +37,52 @@ namespace A2.Handler
                 return AuthenticateResult.Fail("Authorization header not found.");
             }
 
-            string userName;
-            string password;
-
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
                 var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
                 var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
+                var username = credentials[0];
+                var password = credentials[1];
 
-                userName = credentials[0];
-                password = credentials[1];
+                if (Request.Path.Value != null)
+                {
+                    if (Request.Path.Value.Contains("PurchaseItem"))
+                    {
+                        var user = await _repository.IsUserRegistered(username, password);
+
+                        if (user)
+                        {
+                            var claims = new[] { new Claim(ClaimTypes.RegisteredUser, username) };
+                            var identity = new ClaimsIdentity(claims, Scheme.Name);
+                            var principal = new ClaimsPrincipal(identity);
+                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                            return AuthenticateResult.Success(ticket);
+                        }
+                    }
+                    else if (Request.Path.Value.Contains("AddEvent"))
+                    {
+                        var organizer = await _repository.IsUserOrganizer(username, password);
+
+                        if (organizer)
+                        {
+                            var claims = new[] { new Claim(ClaimTypes.IsOrganizer, username) };
+                            var identity = new ClaimsIdentity(claims, Scheme.Name);
+                            var principal = new ClaimsPrincipal(identity);
+                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                            return AuthenticateResult.Success(ticket);
+                        }
+                    }
+                }
+
+                return AuthenticateResult.Fail("Invalid username or password.");
             }
             catch
             {
-                return AuthenticateResult.Fail("Invalid Authorization Header");
+                return AuthenticateResult.Fail("Error occurred during authentication.");
             }
-
-            if (!await _repository.IsUserRegistered(userName, password))
-            {
-                return AuthenticateResult.Fail("Invalid Username or Password");
-            }
-
-            var claims = new[]
-            {
-                new Claim("RegisteredUser", "true"),
-            };
-
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-            return AuthenticateResult.Success(ticket);
         }
     }
 }

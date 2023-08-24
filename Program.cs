@@ -19,6 +19,7 @@ public class Program
             .AddScheme<AuthenticationSchemeOptions, A2AuthHandler>("BasicAuthentication", null);
 
         builder.Services.AddAuthorization(options => { options.AddPolicy("IsRegisteredUser", policy => policy.RequireClaim("RegisteredUser")); });
+        builder.Services.AddAuthorization(options => { options.AddPolicy("IsOrganizer", policy => policy.RequireClaim("IsOrganizer")); }); 
 
         builder.Services.AddDbContext<A2DbContext>(options => options.UseSqlite(builder.Configuration["WebAPIConnection"]));
 

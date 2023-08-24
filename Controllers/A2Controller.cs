@@ -1,4 +1,5 @@
-﻿using A2.Data;
+﻿using System.Globalization;
+using A2.Data;
 using A2.Dtos;
 using A2.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +47,45 @@ namespace A2.Controllers
             var purchaseOutput = new PurchaseOutput(User.Identity.Name, productId);
 
             return Ok(purchaseOutput);
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "BasicAuthentication", Policy = "IsOrganizer")]
+        [Route("AddEvent")]
+        public async Task<IActionResult> AddEvent([FromBody] EventInput eventInput)
+        {
+            const string format = "yyyyMMddTHHmmssZ";
+
+            bool startMatchesFormat = DateTime.TryParseExact(eventInput.Start, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out _);
+            bool endMatchesFormat = DateTime.TryParseExact(eventInput.End, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out _);
+
+            if (!startMatchesFormat && !endMatchesFormat)
+            {
+                return BadRequest($"The format of Start and End should be {format}.");
+            }
+
+            if (!startMatchesFormat)
+            {
+                return BadRequest($"The format of Start should be {format}.");
+            }
+
+            if (!endMatchesFormat)
+            {
+                return BadRequest($"The format of End should be {format}.");
+            }
+
+            var newEvent = new Event
+            (
+                eventInput.Start,
+                eventInput.End,
+                eventInput.Summary,
+                eventInput.Description,
+                eventInput.Location
+            );
+
+            await _repository.AddEvent(newEvent);
+
+            return Ok("Success.");
         }
     }
 }

@@ -4,9 +4,8 @@ namespace A2.Models
 {
     public class Event
     {
-        public Event(int id, string start, string end, string summary, string description, string location)
+        public Event(string start, string end, string summary, string description, string location)
         {
-            Id = id;
             Start = start;
             End = end;
             Summary = summary;

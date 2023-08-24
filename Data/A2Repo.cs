@@ -19,14 +19,19 @@ namespace A2.Data
 
         public async Task<bool> IsUserRegistered(string userName, string password)
         {
-            if (!await IsUserNameRegistered(userName))
-            {
-                return false;
-            }
+            var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.UserName == userName && user.Password == password);
+            return user != null;
+        }
 
-            var user = await FindUser(userName);
+        public async Task<bool> IsOrganizerNameRegistered(string userName)
+        {
+            return await _dbContext.Organizers.AnyAsync(u => u.Name == userName);
+        }
 
-            return user?.Password == password;
+        public async Task<bool> IsUserOrganizer(string userName, string password)
+        {
+            var organizer = await _dbContext.Organizers.FirstOrDefaultAsync(organizer => organizer.Name == userName && organizer.Password == password);
+            return organizer != null;
         }
 
         public async Task<User?> FindUser(string userName)
@@ -43,6 +48,12 @@ namespace A2.Data
         public async Task<Product?> FindProduct(int productId)
         {
             return await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        }
+
+        public async Task AddEvent(Event newEvent)
+        {
+            _dbContext.Events.Add(newEvent);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
