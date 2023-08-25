@@ -109,8 +109,8 @@ namespace A2.Controllers
                 return BadRequest($"Event {id} does not exist.");
             }
 
-            var iCalendarContent = CalendarOutputFormatter.ConvertEventToICalendar(e);
-            return Ok(iCalendarContent);
+            Response.Headers.Add("Content-Type", "text/vcard");
+            return Ok(e);
         }
     }
 }

@@ -1,12 +1,22 @@
 ﻿using System.Text;
 using A2.Models;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
 
 namespace A2.Helper
 {
-    class CalendarOutputFormatter
+    class CalendarOutputFormatter : TextOutputFormatter
     {
-        public static string ConvertEventToICalendar(Event e)
+        public CalendarOutputFormatter()
         {
+            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/vcard"));
+            SupportedEncodings.Add(Encoding.UTF8);
+        }
+
+        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        {
+            Event e = (Event)context.Object;
+
             var dtStamp = DateTime.UtcNow;
 
             var builder = new StringBuilder();
@@ -29,7 +39,12 @@ namespace A2.Helper
             builder.AppendLine("END:VEVENT");
             builder.AppendLine("END:VCALENDAR");
 
-            return builder.ToString();
+            var outString = builder.ToString();
+
+            byte[] outBytes = selectedEncoding.GetBytes(outString);
+            var response = context.HttpContext.Response.Body;
+
+            return response.WriteAsync(outBytes, 0, outBytes.Length);
         }
     }
 }

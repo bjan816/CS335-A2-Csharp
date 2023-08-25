@@ -1,5 +1,6 @@
 using A2.Data;
 using A2.Handler;
+using A2.Helper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,8 @@ public class Program
         builder.Services.AddDbContext<A2DbContext>(options => options.UseSqlite(builder.Configuration["WebAPIConnection"]));
 
         builder.Services.AddScoped<IA2Repo, A2Repo>();
+
+        builder.Services.AddMvc(options => options.OutputFormatters.Add(new CalendarOutputFormatter()));
 
         var app = builder.Build();
 
