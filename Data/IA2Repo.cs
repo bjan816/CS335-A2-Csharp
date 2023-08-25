@@ -14,7 +14,6 @@ namespace A2.Data
 
         Task<User?> FindUser(string userName);
         Task RegisterUser(User user);
-        Task RegisterOrganizer(Organizer organizer);
 
         Task<Product?> FindProduct(int productId);
 
