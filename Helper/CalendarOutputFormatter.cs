@@ -14,8 +14,8 @@ namespace A2.Helper
             const string uid = "bjan816";
 
             builder.AppendLine("BEGIN:VCALENDAR");
-            builder.AppendLine($"PRODID:-//{uid}");
             builder.AppendLine("VERSION:2.0");
+            builder.AppendLine($"PRODID:-//{uid}");
             builder.AppendLine("BEGIN:VEVENT");
 
             builder.AppendLine($"UID:{e.Id}");
