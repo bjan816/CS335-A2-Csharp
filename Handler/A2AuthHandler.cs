@@ -47,60 +47,29 @@ namespace A2.Handler
 
                 if (Request.Path.Value != null)
                 {
-                    if (Request.Path.Value.Contains("PurchaseItem"))
+                    var user = await _repository.IsUserRegistered(username, password);
+                    var organizer = await _repository.IsUserOrganizer(username, password);
+
+                    List<Claim> claims = new List<Claim>();
+
+                    if (user)
                     {
-                        var user = await _repository.IsUserRegistered(username, password);
-
-                        if (user)
-                        {
-                            var claims = new[] { new Claim(ClaimTypes.RegisteredUser, username) };
-                            var identity = new ClaimsIdentity(claims, Scheme.Name);
-                            var principal = new ClaimsPrincipal(identity);
-                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-                            return AuthenticateResult.Success(ticket);
-                        }
+                        claims.Add(new Claim(ClaimTypes.RegisteredUser, username));
                     }
-                    else if (Request.Path.Value.Contains("AddEvent"))
+
+                    if (organizer)
                     {
-                        var organizer = await _repository.IsUserOrganizer(username, password);
-
-                        if (organizer)
-                        {
-                            var claims = new[] { new Claim(ClaimTypes.IsOrganizer, username) };
-                            var identity = new ClaimsIdentity(claims, Scheme.Name);
-                            var principal = new ClaimsPrincipal(identity);
-                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-                            return AuthenticateResult.Success(ticket);
-                        }
+                        claims.Add(new Claim(ClaimTypes.IsOrganizer, username));
                     }
-                    else if (Request.Path.Value.Contains("EventCount") || Request.Path.Value.Contains("Event/"))
+
+                    if (claims.Count > 0)
                     {
-                        List<Claim> claims = new List<Claim>();
-                        
-                        var user = await _repository.IsUserRegistered(username, password);
-                        var organizer = await _repository.IsUserOrganizer(username, password);
+                        var identity = new ClaimsIdentity(claims, Scheme.Name);
+                        var principal = new ClaimsPrincipal(identity);
+                        var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-                        if (user)
-                        {
-                            claims.Add(new Claim(ClaimTypes.RegisteredUser, username));
-                        }
-
-                        if (organizer)
-                        {
-                            claims.Add(new Claim(ClaimTypes.IsOrganizer, username));
-                        }
-
-                        if (claims.Count > 0)
-                        {
-                            var identity = new ClaimsIdentity(claims, Scheme.Name);
-                            var principal = new ClaimsPrincipal(identity);
-                            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-                            return AuthenticateResult.Success(ticket);
-                        }
-                    } 
+                        return AuthenticateResult.Success(ticket);
+                    }
                 }
 
                 return AuthenticateResult.Fail("Invalid username or password.");
