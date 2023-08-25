@@ -109,7 +109,7 @@ namespace A2.Controllers
                 return BadRequest($"Event {id} does not exist.");
             }
 
-            Response.Headers.Add("Content-Type", "text/vcard");
+            Response.Headers.Add("Content-Type", "text/calendar");
             return Ok(e);
         }
     }

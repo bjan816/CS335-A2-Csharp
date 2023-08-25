@@ -9,7 +9,7 @@ namespace A2.Helper
     {
         public CalendarOutputFormatter()
         {
-            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/vcard"));
+            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/calendar"));
             SupportedEncodings.Add(Encoding.UTF8);
         }
 
