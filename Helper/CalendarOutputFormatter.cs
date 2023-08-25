@@ -11,11 +11,11 @@ namespace A2.Helper
 
             var builder = new StringBuilder();
 
-            const string uid = "bjan816";
+            const string upi = "bjan816";
 
             builder.AppendLine("BEGIN:VCALENDAR");
             builder.AppendLine("VERSION:2.0");
-            builder.AppendLine($"PRODID:-//{uid}");
+            builder.AppendLine($"PRODID:-//{upi}");
             builder.AppendLine("BEGIN:VEVENT");
 
             builder.AppendLine($"UID:{e.Id}");
