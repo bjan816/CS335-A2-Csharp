@@ -25,7 +25,7 @@ namespace A2.Helper
 
             builder.AppendLine("BEGIN:VCALENDAR");
             builder.AppendLine("VERSION:2.0");
-            builder.AppendLine($"PRODID:-//{upi}");
+            builder.AppendLine($"PRODID:{upi}");
             builder.AppendLine("BEGIN:VEVENT");
 
             builder.AppendLine($"UID:{e.Id}");
