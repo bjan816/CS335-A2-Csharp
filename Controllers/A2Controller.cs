@@ -2,6 +2,7 @@
 using System.Text;
 using A2.Data;
 using A2.Dtos;
+using A2.Handler;
 using A2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ namespace A2.Controllers
                 return BadRequest($"Product {productId} not found");
             }
 
-            var purchaseOutput = new PurchaseOutput(User.Identity.Name, productId);
+            var purchaseOutput = new PurchaseOutput(User.FindFirst(ClaimTypes.RegisteredUser)?.Value, productId);
 
             return Ok(purchaseOutput);
         }
